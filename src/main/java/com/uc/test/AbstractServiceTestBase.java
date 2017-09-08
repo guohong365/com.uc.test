@@ -9,7 +9,8 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 
 import com.uc.web.forms.ListQueryForm;
-import com.uc.web.forms.WebListForm;
+import com.uc.web.forms.ui.componet.PageCtrl;
+import com.uc.web.forms.ui.componet.PageCtrlImpl;
 import com.uc.web.service.AppDetailService;
 import com.uc.web.service.AppExportService;
 import com.uc.web.service.AppListService;
@@ -84,11 +85,10 @@ public abstract class AbstractServiceTestBase<KeyType, QueryFormType extends Lis
 			assertNotNull(list);			
 		}
 		
-		if(getWebListService()!=null){
-			WebListForm<QueryFormType, EntityType> webForm=new WebListForm<>();
+		if(getWebListService()!=null){			
 			queryForm=createQueryForm();
-			webForm.setQuery(queryForm);			
-			getWebListService().select(webForm);
+			PageCtrl pageCtrl=new PageCtrlImpl();	
+			getWebListService().select(queryForm, pageCtrl);
 		}
 	}
 
