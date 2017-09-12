@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 
@@ -49,7 +50,7 @@ public abstract class AbstractServiceTestBase<KeyType, QueryFormType extends Lis
 		}
 		return null;
 	}
-	
+	@Ignore
 	@Test
 	@Rollback
 	public void runTest(){
