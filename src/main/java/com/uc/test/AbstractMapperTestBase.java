@@ -13,7 +13,7 @@ import org.springframework.util.StringUtils;
 
 import com.uc.web.domain.WithId;
 import com.uc.web.domain.WithUuid;
-import com.uc.web.forms.QueryForm;
+import com.uc.web.forms.ListQueryForm;
 import com.uc.web.persistence.AppDeleteMapper;
 import com.uc.web.persistence.AppInsertMapper;
 import com.uc.web.persistence.AppListMapper;
@@ -24,40 +24,33 @@ import com.uc.web.persistence.AppUuidMapper;
 import com.uc.web.persistence.Example;
 import com.uc.web.persistence.ExampleImpl;
 
-public abstract class AbstractMapperTestBase<KeyType, QueryFormType extends QueryForm<KeyType>, DetailType> 
+public abstract class AbstractMapperTestBase<KeyType, QueryFormType extends ListQueryForm, DetailType> 
 	extends AbstractMapperTest {
 	
 
-	@SuppressWarnings("unchecked")
-	public AppInsertMapper<DetailType> getInsertMapper() {
-		return getMapper() instanceof AppInsertMapper ? (AppInsertMapper<DetailType>)getMapper() : null;
+	public AppInsertMapper getInsertMapper() {
+		return getMapper() instanceof AppInsertMapper ? (AppInsertMapper)getMapper() : null;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public AppUpdateMapper<DetailType> getUpdateMapper() {
-		return getMapper() instanceof AppUpdateMapper ? (AppUpdateMapper<DetailType>)getMapper() : null;
+	public AppUpdateMapper getUpdateMapper() {
+		return getMapper() instanceof AppUpdateMapper ? (AppUpdateMapper)getMapper() : null;
 	}
-	@SuppressWarnings("unchecked")
-	public AppDeleteMapper<DetailType> getDeleteMapper() {
-		return getMapper() instanceof AppDeleteMapper ? (AppDeleteMapper<DetailType>)getMapper() : null;
+	public AppDeleteMapper getDeleteMapper() {
+		return getMapper() instanceof AppDeleteMapper ? (AppDeleteMapper)getMapper() : null;
 	}
-	@SuppressWarnings("unchecked")
-	public AppUuidMapper<KeyType, DetailType> getUuidMapper() {
-		return getMapper() instanceof AppUuidMapper ? (AppUuidMapper<KeyType, DetailType>) getMapper() : null;
+	public AppUuidMapper getUuidMapper() {
+		return getMapper() instanceof AppUuidMapper ? (AppUuidMapper) getMapper() : null;
 	}
-	@SuppressWarnings("unchecked")
-	public AppOptimizedMapper<QueryFormType, DetailType> getOptimizedMapper() {
-		return getMapper() instanceof AppOptimizedMapper ? (AppOptimizedMapper<QueryFormType, DetailType>) getMapper() : null;
+	public AppOptimizedMapper getOptimizedMapper() {
+		return getMapper() instanceof AppOptimizedMapper ? (AppOptimizedMapper) getMapper() : null;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public AppSelectByKeyMapper<KeyType, DetailType> getSelectByKeyMapper(){
-		return getMapper() instanceof AppSelectByKeyMapper ? (AppSelectByKeyMapper<KeyType, DetailType>)getMapper() : null;
+	public AppSelectByKeyMapper getSelectByKeyMapper(){
+		return getMapper() instanceof AppSelectByKeyMapper ? (AppSelectByKeyMapper)getMapper() : null;
 	}	
 	
-	@SuppressWarnings("unchecked")
-	public AppListMapper<DetailType> getListMapper() {
-		return getMapper() instanceof AppListMapper ? (AppListMapper<DetailType>)getMapper() : null;
+	public AppListMapper getListMapper() {
+		return getMapper() instanceof AppListMapper ? (AppListMapper)getMapper() : null;
 	}
 	
 	protected boolean verifyInserted(DetailType loadback, DetailType inserted){
@@ -80,15 +73,15 @@ public abstract class AbstractMapperTestBase<KeyType, QueryFormType extends Quer
 	};
 
 	@SuppressWarnings("unchecked")
-	KeyType getEntityId(DetailType entity){
+	KeyType getEntityId(Object entity){
 		if(entity instanceof WithId){
-			KeyType id=((WithId<KeyType>)entity).getId();
+			KeyType id=(KeyType) ((WithId)entity).getId();
 			if(id!=null) return id;
  
 			if(entity instanceof WithUuid && getUuidMapper()!=null){
 				String uuid=((WithUuid)entity).getUuid();
 				if(!StringUtils.isEmpty(uuid)){
-					id=getUuidMapper().selectIdByUuid(uuid);
+					id=(KeyType) getUuidMapper().selectIdByUuid(uuid);
 					return id;
 				}
 			}			
@@ -100,10 +93,11 @@ public abstract class AbstractMapperTestBase<KeyType, QueryFormType extends Quer
 	String getEntityUuid(DetailType entity){
 		return ((WithUuid)entity).getUuid();
 	}
+	@SuppressWarnings("unchecked")
 	DetailType loadBack(DetailType entity){
-		KeyType key=getEntityId(entity);
+		KeyType key=(KeyType) getEntityId(entity);
 		assertNotNull(key);				
-		DetailType loadback=getSelectByKeyMapper().selectById(key);
+		DetailType loadback=(DetailType) getSelectByKeyMapper().selectById(key);
 		assertNotNull(loadback);
 		assertNotNullFields(loadback);	
 		return loadback;
@@ -120,6 +114,7 @@ public abstract class AbstractMapperTestBase<KeyType, QueryFormType extends Quer
 		DetailType loadback=loadBack(updated);
 		assertTrue(verifyPartlyUpdated(loadback, updated));
 	}
+	@SuppressWarnings("unchecked")
 	@Ignore
 	@Test
 	@Rollback
@@ -142,7 +137,7 @@ public abstract class AbstractMapperTestBase<KeyType, QueryFormType extends Quer
 		if(getUuidMapper()!=null){
 			System.err.println("test uuid mapper....");
 			String uuid=getEntityUuid(entity);			
-			result =getUuidMapper().selectByUuid(uuid);
+			result =(DetailType) getUuidMapper().selectByUuid(uuid);
 			System.err.println("entity loaded by uuid.....");			
 			assertNotNull(result);
 			System.err.println(result.toString());
@@ -197,7 +192,7 @@ public abstract class AbstractMapperTestBase<KeyType, QueryFormType extends Quer
 			Long count=getListMapper().selectCountByExample(example);
 			assertNotNull(count);			
 			System.err.println("count=" + count);
-			List<DetailType> list = getListMapper().selectByExample(example, 0, 10);
+			List<?> list = getListMapper().selectByExample(example, 0, 10);
 			if(hasLimit()){
 				assertTrue(count > 10 ? list.size()==10 : list.size()==count);
 			}
@@ -221,7 +216,7 @@ public abstract class AbstractMapperTestBase<KeyType, QueryFormType extends Quer
 			System.err.println("test select by empty queryFrom....");
 			Long count = getOptimizedMapper().selectCountOptimized(queryForm);
 			System.err.println("count=" + count);
-			List<DetailType> list=getOptimizedMapper().selectOptimized(queryForm, 0, 10);
+			List<?> list=getOptimizedMapper().selectOptimized(queryForm, 0, 10);
 			if(hasLimit()){
 				assertTrue(count > 10 ? list.size()==10 : list.size()==count);
 			}

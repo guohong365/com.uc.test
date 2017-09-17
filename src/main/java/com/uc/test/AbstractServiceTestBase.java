@@ -19,37 +19,34 @@ import com.uc.web.service.AppWebListService;
 
 public abstract class AbstractServiceTestBase<KeyType, QueryFormType extends ListQueryForm, EntityType> extends AbstractServiceTest<KeyType>{
 	
-	@SuppressWarnings("unchecked")
-	AppDetailService<KeyType, EntityType> getDetailService(){
+	AppDetailService getDetailService(){
 		if(getService() instanceof AppDetailService){
-			return (AppDetailService<KeyType, EntityType>) getService();
+			return (AppDetailService) getService();
 		}
 		return null;
 	}
 	
-	@SuppressWarnings("unchecked")
-	AppListService<QueryFormType, EntityType> getListService(){
+	AppListService getListService(){
 		if(getService() instanceof AppListService){
-			return (AppListService<QueryFormType, EntityType>) getService();
+			return (AppListService) getService();
 		}
 		return null;
 	}
 	
-	@SuppressWarnings("unchecked")
-	AppExportService<QueryFormType, EntityType> getExportService(){
+	AppExportService getExportService(){
 		if(getService() instanceof AppExportService){
-			return (AppExportService<QueryFormType, EntityType>) getService();
+			return (AppExportService) getService();
 		}
 		return null;
 	}
 	
-	@SuppressWarnings("unchecked")
-	AppWebListService<QueryFormType, EntityType> getWebListService(){
+	AppWebListService getWebListService(){
 		if(getService() instanceof AppWebListService){
-			return (AppWebListService<QueryFormType, EntityType>) getService();
+			return (AppWebListService) getService();
 		}
 		return null;
 	}
+	@SuppressWarnings("unchecked")
 	@Ignore
 	@Test
 	@Rollback
@@ -60,7 +57,7 @@ public abstract class AbstractServiceTestBase<KeyType, QueryFormType extends Lis
 			int ret=getDetailService().insert(entity);
 			if(ret > 0){
 				KeyType id=getEntityId(entity);
-				EntityType loadback=getDetailService().selectById(id);
+				EntityType loadback=(EntityType) getDetailService().selectById(id);
 				assertNotNull(loadback);
 				assertNotNullFields(loadback);
 				verifyInserted(loadback, entity);
@@ -77,12 +74,12 @@ public abstract class AbstractServiceTestBase<KeyType, QueryFormType extends Lis
 			assertNotNull(queryForm);			
 			Long count=getListService().selectCount(queryForm);
 			assertNotNull(count);			
-			List<EntityType> list= getListService().select(queryForm, 0, 10);
+			List<?> list= getListService().select(queryForm, 0, 10);
 			assertTrue(list.size() == (count > 10 ? 10 : count));
 		}
 		
 		if(getExportService()!=null){			
-			List<EntityType> list= getExportService().selectForExport(queryForm);
+			List<?> list= getExportService().selectForExport(queryForm);
 			assertNotNull(list);			
 		}
 		

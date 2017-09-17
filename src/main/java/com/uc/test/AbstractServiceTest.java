@@ -7,7 +7,7 @@ import com.uc.web.service.Service;
 public abstract class AbstractServiceTest<KeyType> extends AbstractMapperTest{
 	
 	private Service service;
-	private SecurityServiceBase<KeyType> securityService;
+	private SecurityServiceBase securityService;
 		
 	public Service getService() {
 		return service;
@@ -15,10 +15,10 @@ public abstract class AbstractServiceTest<KeyType> extends AbstractMapperTest{
 	public void setService(Service service) {
 		this.service = service;
 	}
-	public SecurityServiceBase<KeyType> getSecurityService() {
+	public SecurityServiceBase getSecurityService() {
 		return securityService;
 	}
-	public void setSecurityService(SecurityServiceBase<KeyType> securityService) {
+	public void setSecurityService(SecurityServiceBase securityService) {
 		this.securityService = securityService;
 	}
 	UserProfile getUser(String loginId){
