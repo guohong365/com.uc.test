@@ -115,7 +115,6 @@ public abstract class AbstractMapperTestBase<KeyType, QueryFormType extends List
 		assertTrue(verifyPartlyUpdated(loadback, updated));
 	}
 	@SuppressWarnings("unchecked")
-	@Ignore
 	@Test
 	@Rollback
 	public void runTest()
