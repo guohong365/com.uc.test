@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.util.StringUtils;
